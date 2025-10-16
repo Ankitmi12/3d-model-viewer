@@ -1,0 +1,110 @@
+/* ------------------ Reset ------------------ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html,body { height: 100%; width: 100%; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+/* ------------------ Top bar ------------------ */
+#topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: linear-gradient(180deg,#ffffff,#f3f8ff);
+  border-bottom: 1px solid #e6eef8;
+  z-index: 60;
+  box-shadow: 0 2px 6px rgba(10,30,60,0.04);
+}
+#topbar .left { display:flex; align-items:center; gap:12px; }
+.hamburger { font-size:20px; background:transparent; border:none; cursor:pointer; padding:6px 8px; border-radius:6px; }
+.title { font-weight:700; color:#0b4f76; font-size:15px; }
+#topbar .right { display:flex; align-items:center; gap:10px; }
+
+/* small icon button used in topbar */
+.icon-btn.small { background:transparent; border:1px solid #d7eaf8; border-radius:6px; padding:6px 10px; cursor:pointer; }
+.upload-label input { display:none; cursor:pointer; }
+.tiny-icon { width:18px; height:18px; pointer-events:none; }
+
+/* ------------------ Layout ------------------ */
+#viewer-container { display:flex; height:100vh; padding-top:52px; overflow:hidden; }
+
+/* Sidebar */
+#control-panel {
+  width: 320px;
+  min-width: 240px;
+  max-width: 420px;
+  background: linear-gradient(180deg,#ffffff,#f7fbff);
+  border-right: 1px solid #e6eef8;
+  padding: 18px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  transition: transform 260ms ease, width 260ms ease;
+  z-index: 50;
+  box-shadow: 2px 0 8px rgba(12,30,60,0.03);
+}
+
+/* collapsed: slide left completely (but topbar remains) */
+#control-panel.collapsed { transform: translateX(-100%); }
+
+/* Panel content */
+.panel-header h1 { font-size: 16px; color:#0b4f76; margin-bottom:6px; }
+.panel-section { padding-top:6px; border-top:1px solid #eef6fb; }
+.panel-section h2 { font-size:14px; color:#083651; margin-bottom:8px; }
+
+/* Buttons */
+.primary { background:#007bff; color:white; border:none; padding:10px 12px; border-radius:8px; cursor:pointer; font-weight:600; }
+.full-width { width:100%; }
+
+/* Slicing rows */
+.slice-row { display:flex; align-items:center; gap:8px; margin:8px 0; }
+.slice-row input[type="range"] { flex:1; }
+
+/* Objects list */
+.objects-list { display:flex; flex-direction:column; gap:10px; max-height: 300px; overflow:auto; padding-top:6px; }
+.object-item { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px; background:#fff; border-radius:8px; border:1px solid #eef6fb; }
+.object-info { display:flex; flex-direction:column; gap:4px; }
+.object-title { font-weight:700; color:#083651; font-size:14px; display:flex; align-items:center; gap:8px; }
+.object-controls { display:flex; align-items:center; gap:6px;  background-color: rgb(190, 190, 190);}
+
+/* icon within list */
+.icon-btn { background:transparent; border:none; cursor:pointer; padding:6px; border-radius:6px; }
+.icon-img { width:18px; height:18px; pointer-events:none; display:block; }
+
+/* transparency slider */
+.transparency { width:100px; }
+
+/* Canvas area */
+#canvas-wrap { flex:1; position:relative; background:#f0f2f5; }
+canvas { width:100%; height:100%; display:block; }
+
+/* Tooltip */
+#tooltip { position:absolute; background:rgba(0,0,0,0.85); color:#fff; padding:6px 8px; border-radius:6px; font-size:12px; pointer-events:none; transform: translate(-50%, -140%); z-index:90; white-space:nowrap; }
+.hidden { display:none; }
+
+/* Muted text */
+.muted { color:#6b7f8f; font-size:13px; }
+
+/* ------------------ Dark theme ------------------ */
+body.theme-dark {
+  background:#05060a;
+  color:#dbe7f5;
+}
+body.theme-dark #topbar { background: linear-gradient(180deg,#051323,#071428); border-bottom:1px solid rgba(255,255,255,0.03); }
+body.theme-dark #control-panel { background: linear-gradient(180deg,#071226,#0b1730); border-right:1px solid rgba(255,255,255,0.03); }
+body.theme-dark #canvas-wrap { background:#020304; }
+body.theme-dark .object-item { background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.03); }
+body.theme-dark .object-controls { display:flex; align-items:center; gap:6px;  background-color: rgb(56, 55, 55);}
+
+/* Small screens: collapse sidebar by default */
+@media (max-width: 900px) {
+  #control-panel { transform: translateX(-100%); position: absolute; z-index:70; top:52px; left:0; height: calc(100% - 52px); }
+}
+
+.object-item.selected {
+  border: 2px solid #007bff;
+  background: #e6f0ff;
+}
