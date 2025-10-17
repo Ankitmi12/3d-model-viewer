@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <title>3D Medical Viewer</title>
-  <base href="/3d-model-viewer/">
+  <!-- <base href="/3d-model-viewer/"> -->
 
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
@@ -24,15 +24,25 @@
   <div id="viewer-container">
     <!-- Sidebar: collapsible, slides left -->
     <aside id="control-panel" class="open">
-      <div class="panel-header">
-        <h1>Controls</h1>
+
+      <!-- Upload (hidden file input, clickable button) -->
+      <div class="panel-section mb-4 mt-4">
+        <label class="icon-btn small upload-label" title="Upload STL File">
+          <input id="file-input" type="file" accept=".stl" />
+          <i class="fa-solid fa-upload"></i> Upload a New 3D Model (STL)
+        </label>
       </div>
 
+      
       <div class="panel-section mt-4">
         <h2>Available 3D Models</h2>
         <div id="objects-list" class="objects-list">
           <p class="muted">No models loaded yet</p>
         </div>
+      </div>
+
+      <div class="panel-header">
+        <h1>Controls</h1>
       </div>
 
       <div class="panel-section">
@@ -51,14 +61,7 @@
         </div>
       </div>
 
-      <!-- Upload (hidden file input, clickable button) -->
-      <div class="panel-section mb-4 mt-4">
-        <label class="icon-btn small upload-label" title="Upload STL File">
-          <input id="file-input" type="file" accept=".stl" />
-          <i class="fa-solid fa-upload"></i> Upload a New 3D Model (STL)
-        </label>
-      </div>
-
+      
       <div id="static-controls" class="panel-section">
         <h2>Model Appearance & Visibility</h2>
 
@@ -93,7 +96,7 @@
       </div>
 
       <div class="panel-footer muted">
-        Hover over the model to show labels. Use the top-right upload button to load a new STL model.
+        Hover over the model to show labels. Use the top button to load a new STL model or select preloaded 3D Models.
       </div>
     </aside>
 
