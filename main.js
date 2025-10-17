@@ -99,83 +99,42 @@ function handleFileUpload(e){
 }
 
 /* ---------------- object list UI ---------------- */
-function addMeshToList(mesh){
+function addMeshToList(mesh) {
   const list = document.getElementById('objects-list');
   const placeholder = list.querySelector('.muted');
   if (placeholder) placeholder.remove();
 
-  const id = `obj-${Date.now()}-${Math.floor(Math.random()*1000)}`;
+  // create a unique ID for this mesh
+  const id = `obj-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
+  // main list item
   const item = document.createElement('div');
   item.className = 'object-item';
   item.id = id;
 
-  const info = document.createElement('div'); 
+  // info section (name/title)
+  const info = document.createElement('div');
   info.className = 'object-info';
-  const title = document.createElement('div'); 
-  title.className = 'object-title'; 
-  title.textContent = mesh.name;
+
+  const title = document.createElement('div');
+  title.className = 'object-title';
+  title.textContent = mesh.name || `Object ${meshes.length + 1}`;
   info.appendChild(title);
 
-  const ctrl = document.createElement('div'); 
-  ctrl.className = 'object-controls';
-
-  // initially hidden
-  mesh.visible = false;
-
-  // when item clicked, select this mesh
-  item.addEventListener('click', ()=>{ selectMesh(id); });
-
-  // visibility toggle button
-  const visBtn = document.createElement('button'); visBtn.className = 'icon-btn';
-  const visImg = document.createElement('img'); visImg.className = 'icon-img';
-  visImg.src = './icons/show-icon.svg';
-  visBtn.appendChild(visImg);
-  visBtn.title = 'Toggle visibility';
-  visBtn.addEventListener('click', ()=>{
-    mesh.userData.visible = !mesh.userData.visible;
-    if(selectedMeshId === id){
-      mesh.visible = !mesh.visible;
-      visImg.src = mesh.visible ? './icons/show-icon.svg' : './icons/hide-icon.svg';
-    }
-  });
-
-  // preset opacity buttons
-  const fullBtn = document.createElement('button'); fullBtn.className = 'icon-btn';
-  const fullImg = document.createElement('img'); fullImg.className = 'icon-img'; fullImg.src = './icons/full-visibal.svg';
-  fullBtn.appendChild(fullImg);
-  fullBtn.title = 'Opaque';
-  fullBtn.addEventListener('click', ()=> { if(selectedMeshId===id){ mesh.material.opacity = 1; if(slider) slider.value=1; } });
-
-  const halfBtn = document.createElement('button'); halfBtn.className = 'icon-btn';
-  const halfImg = document.createElement('img'); halfImg.className = 'icon-img'; halfImg.src = './icons/half-transparent.svg';
-  halfBtn.appendChild(halfImg);
-  halfBtn.title = '50%';
-  halfBtn.addEventListener('click', ()=> { if(selectedMeshId===id){ mesh.material.opacity = 0.5; if(slider) slider.value=0.5; } });
-
-  const transBtn = document.createElement('button'); transBtn.className = 'icon-btn';
-  const transImg = document.createElement('img'); transImg.className = 'icon-img'; transImg.src = './icons/full-transparent.svg';
-  transBtn.appendChild(transImg);
-  transBtn.title = 'Mostly transparent';
-  transBtn.addEventListener('click', ()=> { if(selectedMeshId===id){ mesh.material.opacity = 0.15; if(slider) slider.value=0.15; } });
-
-  // transparency slider
-  const slider = document.createElement('input');
-  slider.type = 'range'; slider.min = 0.1; slider.max = 1; slider.step = 0.05; slider.value = mesh.material.opacity || 1;
-  slider.className = 'transparency';
-  slider.addEventListener('input', ()=>{ if(selectedMeshId===id) mesh.material.opacity = parseFloat(slider.value); });
-
-  ctrl.appendChild(visBtn);
-  ctrl.appendChild(fullBtn);
-  ctrl.appendChild(halfBtn);
-  ctrl.appendChild(transBtn);
-  ctrl.appendChild(slider);
-
   item.appendChild(info);
-  item.appendChild(ctrl);
   list.appendChild(item);
 
-  meshes.push({ id, mesh, slider });
+  // initially hidden until selected
+  mesh.visible = false;
+
+  // when item is clicked, select this mesh
+  item.addEventListener('click', () => {
+    selectMesh(id);
+  });
+
+  // store mesh reference
+  meshes.push({ id, mesh });
+
   return id;
 }
 
@@ -189,13 +148,28 @@ function getActiveClippingPlanes(){
   return arr;
 }
 function updateClippingPlanes(){
-  const active = getActiveClippingPlanes();
-  const obj = meshes.find(m=>m.id===selectedMeshId);
-  if(obj && obj.mesh && obj.mesh.material){
-    obj.mesh.material.clippingPlanes = active;
-    obj.mesh.material.needsUpdate = true;
+  const obj = meshes.find(m => m.id === selectedMeshId);
+  if(!obj || !obj.mesh || !obj.mesh.material) return;
+
+  const bbox = new THREE.Box3().setFromObject(obj.mesh);
+  const center = bbox.getCenter(new THREE.Vector3());
+
+  const planes = [];
+
+  if(clipping.x.enabled){
+    planes.push(new THREE.Plane(new THREE.Vector3(-1,0,0), clipping.x.plane.constant - center.x));
   }
+  if(clipping.y.enabled){
+    planes.push(new THREE.Plane(new THREE.Vector3(0,-1,0), clipping.y.plane.constant - center.y));
+  }
+  if(clipping.z.enabled){
+    planes.push(new THREE.Plane(new THREE.Vector3(0,0,-1), clipping.z.plane.constant - center.z));
+  }
+
+  obj.mesh.material.clippingPlanes = planes;
+  obj.mesh.material.needsUpdate = true;
 }
+
 
 
 /* ---------------- tooltip ---------------- */
@@ -306,14 +280,55 @@ function loadLocalSTL(path, name){
 
 function selectMesh(id){
   meshes.forEach(o => {
-    o.mesh.visible = (o.id === id) ? o.mesh.userData.visible : false;
-    if(o.slider) o.slider.value = o.mesh.material.opacity;
+    o.mesh.visible = (o.id === id) ? true : false;
     const dom = document.getElementById(o.id);
     if(dom) dom.classList.toggle('selected', o.id === id);
   });
   selectedMeshId = id;
-  updateClippingPlanes(); // apply clipping only to selected
+  updateClippingPlanes();
+
+  // update static UI to match current mesh
+  const obj = meshes.find(m => m.id === id);
+  if (obj) {
+    const visImg = document.querySelector('#vis-btn img');
+    visImg.src = obj.mesh.visible ? './icons/show-icon.svg' : './icons/hide-icon.svg';
+    document.getElementById('opacity-slider').value = obj.mesh.material.opacity || 1;
+  }
 }
+
+
+// static controls
+const visBtn = document.getElementById('vis-btn');
+const fullBtn = document.getElementById('full-btn');
+const halfBtn = document.getElementById('half-btn');
+const transBtn = document.getElementById('trans-btn');
+const opacitySlider = document.getElementById('opacity-slider');
+
+visBtn.addEventListener('click', () => {
+  if (!selectedMeshId) return;
+  const obj = meshes.find(m => m.id === selectedMeshId);
+  if (!obj) return;
+  obj.mesh.visible = !obj.mesh.visible;
+  const img = visBtn.querySelector('img');
+  img.src = obj.mesh.visible ? './icons/show-icon.svg' : './icons/hide-icon.svg';
+});
+
+fullBtn.addEventListener('click', () => setOpacityForSelected(1));
+halfBtn.addEventListener('click', () => setOpacityForSelected(0.5));
+transBtn.addEventListener('click', () => setOpacityForSelected(0.15));
+
+opacitySlider.addEventListener('input', (e) => {
+  setOpacityForSelected(parseFloat(e.target.value));
+});
+
+function setOpacityForSelected(value){
+  if (!selectedMeshId) return;
+  const obj = meshes.find(m => m.id === selectedMeshId);
+  if (!obj) return;
+  obj.mesh.material.opacity = value;
+  opacitySlider.value = value;
+}
+
 
 
 

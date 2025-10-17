@@ -26,42 +26,72 @@
         <h1>Controls</h1>
       </div>
 
-      <div class="panel-section">
-        <button id="reset-btn" class="primary full-width">🔄 Reset View</button>
+      <div class="panel-section mt-4">
+        <h2>Available 3D Models</h2>
+        <div id="objects-list" class="objects-list">
+          <p class="muted">No models loaded yet</p>
+        </div>
       </div>
 
       <div class="panel-section">
-        <h2>Slicing</h2>
+        <h2>Slicing Controls</h2>
         <div class="slice-row">
-          <label><input type="checkbox" id="slice-x" /> Slice X</label>
+          <label><input type="checkbox" id="slice-x" /> Enable Slice along X-axis</label>
           <input id="slice-x-pos" type="range" min="-300" max="300" value="0" />
         </div>
         <div class="slice-row">
-          <label><input type="checkbox" id="slice-y" /> Slice Y</label>
+          <label><input type="checkbox" id="slice-y" /> Enable Slice along Y-axis</label>
           <input id="slice-y-pos" type="range" min="-300" max="300" value="0" />
         </div>
         <div class="slice-row">
-          <label><input type="checkbox" id="slice-z" /> Slice Z</label>
+          <label><input type="checkbox" id="slice-z" /> Enable Slice along Z-axis</label>
           <input id="slice-z-pos" type="range" min="-300" max="300" value="0" />
         </div>
       </div>
 
-       <!-- Upload (hidden file input, clickable button) -->
-        <div class="panel-section mb-4 mt-4">
-      <label class="icon-btn small upload-label" title="Upload STL">
-        <input id="file-input" type="file" accept=".stl" />
-        <i class="fa-solid fa-upload"></i> Upload New Stl File Here
-      </label>
+      <!-- Upload (hidden file input, clickable button) -->
+      <div class="panel-section mb-4 mt-4">
+        <label class="icon-btn small upload-label" title="Upload STL File">
+          <input id="file-input" type="file" accept=".stl" />
+          <i class="fa-solid fa-upload"></i> Upload a New 3D Model (STL)
+        </label>
       </div>
-      <div class="panel-section mt-4">
-        <h2>Objects (Pre Loaded Stl File)</h2>
-        <div id="objects-list" class="objects-list">
-          <p class="muted">No objects loaded</p>
+
+      <div id="static-controls" class="panel-section">
+        <h2>Model Appearance & Visibility</h2>
+
+        <div class="control-group">
+          <label>Show/Hide Model</label>
+          <button id="vis-btn" class="control-btn full-width">
+            <img src="./icons/show-icon.svg" class="icon-img" /> Toggle Model Visibility
+          </button>
+        </div>
+
+        <div class="control-group">
+          <label>Preset Opacity Levels</label>
+          <button id="full-btn" class="control-btn full-width">
+            <img src="./icons/full-visibal.svg" class="icon-img" /> Fully Opaque
+          </button>
+          <button id="half-btn" class="control-btn full-width">
+            <img src="./icons/half-transparent.svg" class="icon-img" /> 50% Transparent
+          </button>
+          <button id="trans-btn" class="control-btn full-width">
+            <img src="./icons/full-transparent.svg" class="icon-img" /> Mostly Transparent
+          </button>
+        </div>
+
+        <div class="control-group">
+          <label for="opacity-slider">Adjust Custom Opacity</label>
+          <input id="opacity-slider" type="range" min="0.1" max="1" step="0.05" value="1" class="full-width" />
         </div>
       </div>
 
+      <div class="panel-section">
+        <button id="reset-btn" class="primary">🔄 Reset Camera View</button>
+      </div>
+
       <div class="panel-footer muted">
-        Hover over the model to show labels. Use top-right upload button to load an STL.
+        Hover over the model to show labels. Use the top-right upload button to load a new STL model.
       </div>
     </aside>
 
