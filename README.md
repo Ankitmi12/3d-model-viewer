@@ -18,7 +18,7 @@ A lightweight 3D STL viewer built with **Three.js** for viewing, slicing, and to
 ---
 
 ## Demo
-
+https://ankitmi12.github.io/3d-model-viewer/
 
 ---
 
